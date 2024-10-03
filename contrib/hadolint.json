@@ -5,6 +5,10 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "disable-ignore-pragma": {
+      "type": "boolean",
+      "description": "Disable inline ignore pragmas `# hadolint ignore=DLxxxx`"
+    },
     "failure-threshold": {
       "type": "string",
       "description": "A threshold controlling how severe a rule violation must be before the return code indicates failure.",
@@ -35,6 +39,11 @@
         }
       ]
     },
+    "format": {
+      "type": "string",
+      "enum": ["tty", "json", "checkstyle", "codeclimate", "gitlab_codeclimate", "gnu", "codacy"],
+      "description": "Output format"
+    },
     "strict-labels": {
       "type": "boolean",
       "description": "Strictly adhere to label-schem, don't allow additional labels."
@@ -43,6 +52,14 @@
       "type": "object",
       "description": "A label-schema. See https://github.com/hadolint/hadolint#linting-labels for reference.",
       "additionalProperties": true
+    },
+    "no-color": {
+      "type": "boolean",
+      "description": "Don't colorize output."
+    },
+    "no-fail": {
+      "type": "boolean",
+      "description": "Don't exit with a failure status code when any rule is violated."
     },
     "override": {
       "type": "object",
@@ -108,11 +125,6 @@
             "const": "DL3004",
             "description": "Do not use sudo as it leads to unpredictable behavior. Use a tool like gosu to enforce root.",
             "$comment": "https://github.com/hadolint/hadolint/wiki/DL3004"
-          },
-          {
-            "const": "DL3005",
-            "description": "Do not use apt-get upgrade or dist-upgrade.",
-            "$comment": "https://github.com/hadolint/hadolint/wiki/DL3005"
           },
           {
             "const": "DL3006",
@@ -336,7 +348,7 @@
           },
           {
             "const": "DL3053",
-            "description": "Label `<label>` is not a valid time format - must be conform to RFC3339.",
+            "description": "Label `<label>` is not a valid time format - must conform to RFC3339.",
             "$comment": "https://github.com/hadolint/hadolint/wiki/DL3053"
           },
           {
@@ -361,7 +373,7 @@
           },
           {
             "const": "DL3058",
-            "description": "Label `<label>` is not a valid email format - must be conform to RFC5322.",
+            "description": "Label `<label>` is not a valid email format - must conform to RFC5322.",
             "$comment": "https://github.com/hadolint/hadolint/wiki/DL3058"
           },
           {
@@ -568,6 +580,11 @@
             "const": "SC2164",
             "description": "Use `cd ... || exit` in case `cd` fails.",
             "$comment": "https://github.com/koalaman/shellcheck/wiki/SC2164"
+          },
+          {
+            "const": "SC3046",
+            "description": "In POSIX sh, 'source' in place of '.' is undefined.",
+            "$comment": "https://github.com/koalaman/shellcheck/wiki/SC3046"
           }
         ]
       }

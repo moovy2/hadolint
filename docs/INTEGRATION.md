@@ -89,7 +89,7 @@ jobs:
 
 ```
 
-### Gitlab CI
+### GitLab CI
 
 For GitLab CI you need a basic shell in your docker image so you have to use
 the debian based images of hadolint.
@@ -128,7 +128,7 @@ This way, a widget will be integrated to your merge requests alerting potential 
 
 ### Drone CI
 
-For Drone CI, a basic shell is similiarly required.
+For Drone CI, a basic shell is similarly required.
 
 Add the following job to your project's `.drone.yml` pipeline (drone version 0.8 or earlier):
 
@@ -328,7 +328,7 @@ your repository:
 ---
 repos:
   - repo: https://github.com/hadolint/hadolint
-    rev: master
+    rev: v2.12.0
     hooks:
       - id: hadolint
 ```
@@ -337,7 +337,7 @@ or alternatively use this to run Hadolint with Docker:
 ---
 repos:
   - repo: https://github.com/hadolint/hadolint
-    rev: master
+    rev: v2.12.0
     hooks:
       - id: hadolint-docker
 ```

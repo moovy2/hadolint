@@ -69,7 +69,7 @@ shellcheck (ShellOpts sh env) (ParsedShell txt _ _) =
     si = mockedSystemInterface [("", "")]
     spec =
       emptyCheckSpec
-        { csFilename = "", -- filename can be ommited because we only want the parse results back
+        { csFilename = "", -- filename can be omitted because we only want the parse results back
           csScript = script,
           csCheckSourced = False,
           csExcludedWarnings = exclusions,
@@ -205,6 +205,9 @@ getArgsNoFlags args = map arg $ filter (notAFlagId . partId) (arguments args)
 hasFlag :: Text.Text -> Command -> Bool
 hasFlag flag Command {flags} = not $ null [f | CmdPart f _ <- flags, f == flag]
 
+countFlag :: Text.Text -> Command -> Int
+countFlag flag Command {flags} = length [ f | CmdPart f _ <- flags, f == flag ]
+
 hasAnyFlag :: [Text.Text] -> Command -> Bool
 hasAnyFlag fs Command {flags} = not $ null [f | CmdPart f _ <- flags, f `elem` fs]
 
@@ -212,14 +215,14 @@ hasArg :: Text.Text -> Command -> Bool
 hasArg arg Command {arguments} = not $ null [a | CmdPart a _ <- arguments, a == arg]
 
 dropFlagArg :: [Text.Text] -> Command -> Command
-dropFlagArg flagsToDrop Command {name, arguments, flags} = Command name filterdArgs flags
+dropFlagArg flagsToDrop Command {name, arguments, flags} = Command name filteredArgs flags
   where
     idsToDrop = Set.fromList [getValueId fId arguments | CmdPart f fId <- flags, f `elem` flagsToDrop]
-    filterdArgs = [arg | arg@(CmdPart _ aId) <- arguments, not (aId `Set.member` idsToDrop)]
+    filteredArgs = [arg | arg@(CmdPart _ aId) <- arguments, not (aId `Set.member` idsToDrop)]
 
--- | given a flag and a command, return list of arguments for that particulat
+-- | given a flag and a command, return list of arguments for that particular
 -- flag. E.g., if the command is `useradd -u 12345 luser` and this function is
--- called for the command `u`, it returns ["12345"].
+-- called for the flag `u`, it returns ["12345"].
 getFlagArg :: Text.Text -> Command -> [Text.Text]
 getFlagArg flag Command {arguments, flags} = extractArgs
   where
@@ -238,6 +241,7 @@ isPipInstall cmd@(Command name _ _) = isStdPipInstall || isPythonPipInstall
   where
     isStdPipInstall =
       "pip" `Text.isPrefixOf` name
+        && not ("pipenv" `Text.isPrefixOf` name)
         && ["install"] `isInfixOf` getArgs cmd
     isPythonPipInstall =
       "python" `Text.isPrefixOf` name

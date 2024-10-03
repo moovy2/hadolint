@@ -11,5 +11,6 @@ in
       src = ./.;
     };
     # Specify the GHC version to use.
-    compiler-nix-name = "ghc8107";
+    compiler-nix-name = "ghc982";
+    cabalProjectFreeze = "cabal.project.freeze";
   }

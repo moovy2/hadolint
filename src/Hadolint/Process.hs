@@ -15,7 +15,6 @@ import qualified Hadolint.Rule.DL3001
 import qualified Hadolint.Rule.DL3002
 import qualified Hadolint.Rule.DL3003
 import qualified Hadolint.Rule.DL3004
-import qualified Hadolint.Rule.DL3005
 import qualified Hadolint.Rule.DL3006
 import qualified Hadolint.Rule.DL3007
 import qualified Hadolint.Rule.DL3008
@@ -82,6 +81,8 @@ import qualified Hadolint.Shell as Shell
 data AnalisisResult = AnalisisResult
   { -- | The set of ignored rules per line
     ignored :: SMap.IntMap (Set.Set RuleCode),
+    -- | The set of globally ignored rules
+    globalIgnored :: Set.Set RuleCode,
     -- | A set of failures collected for reach rule
     failed :: Failures
   }
@@ -93,6 +94,7 @@ run config dockerfile = Seq.filter shouldKeep failed
 
     shouldKeep CheckFailure {line, code}
       | disableIgnorePragma config = True
+      | code `Set.member` globalIgnored = False
       | otherwise = Just True /= do
           ignoreList <- SMap.lookup line ignored
           return $ code `Set.member` ignoreList
@@ -103,6 +105,7 @@ analyze ::
 analyze config =
   AnalisisResult
     <$> Hadolint.Pragma.ignored
+    <*> Hadolint.Pragma.globalIgnored
     <*> Foldl.premap parseShell (failures config)
 
 parseShell :: InstructionPos Text.Text -> InstructionPos Shell.ParsedShell
@@ -116,7 +119,6 @@ failures Configuration {allowedRegistries, labelSchema, strictLabels} =
     <> Hadolint.Rule.DL3002.rule
     <> Hadolint.Rule.DL3003.rule
     <> Hadolint.Rule.DL3004.rule
-    <> Hadolint.Rule.DL3005.rule
     <> Hadolint.Rule.DL3006.rule
     <> Hadolint.Rule.DL3007.rule
     <> Hadolint.Rule.DL3008.rule
